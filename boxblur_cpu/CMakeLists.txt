@@ -12,19 +12,21 @@ endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 
 set(SOURCE_DIR source)
-set(INCLUDE_DIR include)
+set(INCLUDE_DIR include ${CMAKE_SOURCE_DIR}/common/include)
 
 file(GLOB SOURCES
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.c")
 
 file(GLOB INCLUDE
+        "${CMAKE_SOURCE_DIR}/common/include/*.h"
+        "${CMAKE_SOURCE_DIR}/common/include/*.hpp"
         "${INCLUDE_DIR}/*.h"
         "${INCLUDE_DIR}/*.hpp")
 
 include_directories(${INCLUDE_DIR})
 
-add_executable(boxblur_cpu ${SOURCES} ${INCLUDE})
+add_executable(boxblur_cpu ${SOURCES})
 
 set_target_properties(boxblur_cpu PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}

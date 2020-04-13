@@ -37,7 +37,7 @@ set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 #link_directories(${CUDNN_PATH} ${CUDNN_PATH}/lib ${CUDNN_PATH}/lib64)
 
 set(SOURCE_DIR source)
-set(INCLUDE_DIR include)
+set(INCLUDE_DIR include ${CMAKE_SOURCE_DIR}/common/include)
 
 file(GLOB SOURCES
         "${SOURCE_DIR}/*.cu"
@@ -45,13 +45,15 @@ file(GLOB SOURCES
         "${SOURCE_DIR}/*.c")
 
 file(GLOB INCLUDE
+        "${CMAKE_SOURCE_DIR}/common/include/*.h"
+        "${CMAKE_SOURCE_DIR}/common/include/*.hpp"
         "${INCLUDE_DIR}/*.cuh"
         "${INCLUDE_DIR}/*.h"
         "${INCLUDE_DIR}/*.hpp")
 
 include_directories(${INCLUDE_DIR})
 
-cuda_add_executable(boxblur_cuda ${SOURCES} ${INCLUDE})
+cuda_add_executable(boxblur_cuda ${SOURCES})
 cuda_add_cublas_to_target(boxblur_cuda)
 
 set_target_properties(boxblur_cuda PROPERTIES
