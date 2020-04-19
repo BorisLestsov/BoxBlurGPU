@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include "argparse.hpp"
 #include "box_filter_cpu.h"
 #include "box_filter_cuda.h"
-#include "argparse.hpp"
 
 
 int main(int argc, const char** argv)
