@@ -31,7 +31,7 @@ Possible MODE values:
 Example:
 
 ```
-./Release/benchmark --input ../images/220px-Lenna_test_image.PPM --output res.ppm --ker 5 --mode1 cuda_conv --mode2 cuda_sep
+./Release/benchmark --input ../images/big.PPM --output res.png --ker 20 --mode1 cpu_conv --mode2 cuda_conv
 ```
 
 Also `./Release/boxblur_cpu` and `./Release/boxblur_cuda` are compiled, you can use them to test particular modes.
