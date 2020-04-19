@@ -13,11 +13,11 @@ make -j
 ```
 ./Release/benchmark --input INPUT --output OUTPUT --ker KER --mode1 MODE1 --mode2 MODE2
 ```
-INPUT - input image (ppm only)
-OUTPUT - output image (ppm only)
-ker - integer window size
-mode1 - first mode to launch (Possible MODE values)
-mode2 - second mode to launch (Possible MODE values)
+1. INPUT - input image (ppm only)  
+2. OUTPUT - output image (ppm only)  
+3. ker - integer window size  
+4. mode1 - first mode to launch (Possible MODE values)  
+5. mode2 - second mode to launch (Possible MODE values)  
 
 It will launch in MODE1 and then MODE2 to compare time.
 
