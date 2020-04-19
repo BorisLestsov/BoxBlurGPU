@@ -111,7 +111,7 @@ void box_blur_cuda_sep(PPMImage* img, PPMImage* res, int ker){
     checkCudaErrors(cudaEventElapsedTime(&milliseconds_comp, start_comp, stop_comp));
     milliseconds_data = milliseconds_all - milliseconds_comp;
 
-    std::cout << "GPU COMPUTE TIME (microseconds):\t" << (int) (milliseconds_comp*1000) << std::endl;
+    std::cout << "GPU KERNEL TIME (microseconds):\t" << (int) (milliseconds_comp*1000) << std::endl;
     std::cout << "GPU TOTAL TIME (microseconds):\t" << (int) (milliseconds_all*1000) << std::endl;
     std::cout << "GPU DATA TIME (microseconds):\t" << (int) (milliseconds_data*1000) << std::endl;
 
@@ -189,7 +189,7 @@ void box_blur_cuda(PPMImage* img, PPMImage* res, int ker){
     checkCudaErrors(cudaEventElapsedTime(&milliseconds_comp, start_comp, stop_comp));
     milliseconds_data = milliseconds_all - milliseconds_comp;
 
-    std::cout << "GPU COMPUTE TIME (microseconds):\t" << (int) (milliseconds_comp*1000) << std::endl;
+    std::cout << "GPU KERNEL TIME (microseconds):\t" << (int) (milliseconds_comp*1000) << std::endl;
     std::cout << "GPU TOTAL TIME (microseconds):\t" << (int) (milliseconds_all*1000) << std::endl;
     std::cout << "GPU DATA TIME (microseconds):\t" << (int) (milliseconds_data*1000) << std::endl;
 
