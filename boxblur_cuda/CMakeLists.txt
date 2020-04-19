@@ -13,21 +13,24 @@ include(FindCUDA)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 list(APPEND CUDA_NVCC_FLAGS
-        "-arch=sm_61;
-        -std=c++11;
-        -cudart=shared;")
+    "-arch=sm_61;
+    -std=c++11;
+    -cudart=shared;"
+)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g -DDEBUG")
     list(APPEND CUDA_NVCC_FLAGS
-            "-g
-            -O0")
+        "-g
+        -O0"
+    )
 
 else()
     set(CMAKE_BUILD_TYPE "Release")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -Wall -Werror")
     list(APPEND CUDA_NVCC_FLAGS
-            "-O3;")
+        "-O3;"
+    )
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 
@@ -37,30 +40,34 @@ set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 #link_directories(${CUDNN_PATH} ${CUDNN_PATH}/lib ${CUDNN_PATH}/lib64)
 
 set(SOURCE_DIR source)
-set(INCLUDE_DIR include ${CMAKE_SOURCE_DIR}/common/include)
+set(INCLUDE_DIR
+    include
+    ${CMAKE_SOURCE_DIR}/common/include
+)
 
 file(GLOB SOURCES_LIB
-        "${SOURCE_DIR}/*.cu"
-        "${SOURCE_DIR}/*.cpp"
-        "${SOURCE_DIR}/*.c")
+    "${SOURCE_DIR}/*.cu"
+    "${SOURCE_DIR}/*.cpp"
+    "${SOURCE_DIR}/*.c"
+)
 list(REMOVE_ITEM SOURCES_LIB
-    ${SOURCE_DIR}/main.cpp)
+    ${SOURCE_DIR}/main.cpp
+)
 
 file(GLOB INCLUDE
-        "${INCLUDE_DIR}/*.cuh"
-        "${INCLUDE_DIR}/*.h"
-        "${INCLUDE_DIR}/*.hpp")
+    "${INCLUDE_DIR}/*.cuh"
+    "${INCLUDE_DIR}/*.h"
+    "${INCLUDE_DIR}/*.hpp"
+)
 
 include_directories(${INCLUDE_DIR})
 
 cuda_add_library(boxblur_cuda_lib ${SOURCES_LIB})
-#cuda_add_cublas_to_target(boxblur_cuda_lib)
 cuda_add_executable(boxblur_cuda ${SOURCE_DIR}/main.cpp)
 target_link_libraries(boxblur_cuda boxblur_cuda_lib)
+cuda_add_cublas_to_target(boxblur_cuda)
 
 set_target_properties(boxblur_cuda PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
     RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
-        )
-
-#target_link_libraries(boxblur_cuda cudnn)
+)

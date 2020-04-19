@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2.2)
-project(boxblur_cpu)
+project(benchmark)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fopenmp")
 
@@ -15,14 +15,13 @@ set(SOURCE_DIR source)
 set(INCLUDE_DIR
     include
     ${CMAKE_SOURCE_DIR}/common/include
+    ${CMAKE_SOURCE_DIR}/boxblur_cpu/include
+    ${CMAKE_SOURCE_DIR}/boxblur_cuda/include
 )
 
-file(GLOB SOURCES_LIB
-    "${SOURCE_DIR}/*.c"
+file(GLOB SOURCES
     "${SOURCE_DIR}/*.cpp"
-)
-list(REMOVE_ITEM SOURCES_LIB
-    ${SOURCE_DIR}/main.cpp
+    "${SOURCE_DIR}/*.c"
 )
 
 file(GLOB INCLUDE
@@ -32,11 +31,11 @@ file(GLOB INCLUDE
 
 include_directories(${INCLUDE_DIR})
 
-add_library(boxblur_cpu_lib ${SOURCES_LIB})
-add_executable(boxblur_cpu ${SOURCE_DIR}/main.cpp)
-target_link_libraries(boxblur_cpu boxblur_cpu_lib)
+add_executable(benchmark ${SOURCES})
+target_link_libraries(benchmark boxblur_cpu_lib boxblur_cuda_lib)
 
-set_target_properties(boxblur_cpu PROPERTIES
+set_target_properties(benchmark PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
     RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
 )
+
