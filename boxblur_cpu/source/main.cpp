@@ -18,7 +18,9 @@ int main(int argc, char** argv)
     if (mode == "conv"){
         box_blur_cpu(img, res, ker);
     } else if (mode == "acc") {
-        box_blur_cpu_opt(img, res, ker);
+        box_blur_cpu_acc(img, res, ker);
+    } else if (mode == "sep") {
+        box_blur_cpu_sep(img, res, ker);
     } else if (mode == "check") {
         PPMImage* res2 = new PPMImage;
         res2->x = img->x - (ker - 1);
@@ -26,7 +28,7 @@ int main(int argc, char** argv)
         res2->data = (PPMPixel*)malloc(res2->x * res2->y * sizeof(PPMPixel));
 
         box_blur_cpu(img, res, ker);
-        box_blur_cpu_opt(img, res2, ker);
+        box_blur_cpu_acc(img, res2, ker);
 
         uchar* res_ptr = (uchar*) res->data;
         uchar* res2_ptr = (uchar*) res2->data;

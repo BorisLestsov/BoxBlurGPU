@@ -69,6 +69,14 @@ void box_blur_cuda_sep(PPMImage* img, PPMImage* res, int ker){
     checkCudaErrors(cudaMalloc(&d_int, th*tw*3*sizeof(int)));
     checkCudaErrors(cudaMalloc(&d_res, h*w*3*sizeof(uchar)));
 
+    cudaEvent_t start_all, stop_all, start_comp, stop_comp;
+    checkCudaErrors(cudaEventCreate(&start_all));
+    checkCudaErrors(cudaEventCreate(&stop_all));
+    checkCudaErrors(cudaEventCreate(&start_comp));
+    checkCudaErrors(cudaEventCreate(&stop_comp));
+
+    checkCudaErrors(cudaEventRecord(start_all));
+
     checkCudaErrors(cudaMemcpy(d_ptr, ptr, oh*ow*3*sizeof(uchar), cudaMemcpyHostToDevice));
 
     int cell_size = 32;
@@ -76,6 +84,8 @@ void box_blur_cuda_sep(PPMImage* img, PPMImage* res, int ker){
     int num_blocks_y;
     dim3 block_size;
     dim3 grid_size;
+
+    checkCudaErrors(cudaEventRecord(start_comp));
 
     num_blocks_x = th/cell_size + (th % cell_size != 0);
     num_blocks_y = tw/cell_size + (tw % cell_size != 0);
@@ -89,7 +99,21 @@ void box_blur_cuda_sep(PPMImage* img, PPMImage* res, int ker){
     grid_size = dim3(num_blocks_x, num_blocks_y, 3);
     boxblur_ker_sep_y<<<grid_size, block_size>>>(d_int, d_res, ker, th, tw);
 
+    checkCudaErrors(cudaEventRecord(stop_comp));
+
     checkCudaErrors(cudaMemcpy(dst, d_res, h*w*3*sizeof(uchar)*sizeof(uchar), cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaEventRecord(stop_all));
+
+    checkCudaErrors(cudaEventSynchronize(stop_all));
+    float milliseconds_all=0, milliseconds_comp=0, milliseconds_data=0;
+    checkCudaErrors(cudaEventElapsedTime(&milliseconds_all, start_all, stop_all));
+    checkCudaErrors(cudaEventElapsedTime(&milliseconds_comp, start_comp, stop_comp));
+    milliseconds_data = milliseconds_all - milliseconds_comp;
+
+    std::cout << "GPU COMPUTE TIME (ms.):\t" << (int) milliseconds_comp << std::endl;
+    std::cout << "GPU TOTAL TIME (ms.):\t" << (int) milliseconds_all << std::endl;
+    std::cout << "GPU DATA TIME (ms.):\t" << (int) milliseconds_data << std::endl;
 
     checkCudaErrors(cudaFree(d_ptr));
     checkCudaErrors(cudaFree(d_res));
@@ -135,6 +159,14 @@ void box_blur_cuda(PPMImage* img, PPMImage* res, int ker){
     checkCudaErrors(cudaMalloc(&d_ptr, oh*ow*3*sizeof(uchar))); 
     checkCudaErrors(cudaMalloc(&d_res, h*w*3*sizeof(uchar)));
 
+    cudaEvent_t start_all, stop_all, start_comp, stop_comp;
+    checkCudaErrors(cudaEventCreate(&start_all));
+    checkCudaErrors(cudaEventCreate(&stop_all));
+    checkCudaErrors(cudaEventCreate(&start_comp));
+    checkCudaErrors(cudaEventCreate(&stop_comp));
+
+    checkCudaErrors(cudaEventRecord(start_all));
+
     checkCudaErrors(cudaMemcpy(d_ptr, ptr, oh*ow*3*sizeof(uchar), cudaMemcpyHostToDevice));
 
     int cell_size = 32;
@@ -142,9 +174,24 @@ void box_blur_cuda(PPMImage* img, PPMImage* res, int ker){
     int num_blocks_y = w/cell_size + (w % cell_size != 0);
     dim3 block_size = dim3(cell_size, cell_size);
     dim3 grid_size = dim3(num_blocks_x, num_blocks_y, 3);
+
+    checkCudaErrors(cudaEventRecord(start_comp));
     boxblur_ker<<<grid_size, block_size>>>(d_ptr, d_res, ker, oh, ow);
+    checkCudaErrors(cudaEventRecord(stop_comp));
 
     checkCudaErrors(cudaMemcpy(dst, d_res, h*w*3*sizeof(uchar)*sizeof(uchar), cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaEventRecord(stop_all));
+
+    checkCudaErrors(cudaEventSynchronize(stop_all));
+    float milliseconds_all=0, milliseconds_comp=0, milliseconds_data=0;
+    checkCudaErrors(cudaEventElapsedTime(&milliseconds_all, start_all, stop_all));
+    checkCudaErrors(cudaEventElapsedTime(&milliseconds_comp, start_comp, stop_comp));
+    milliseconds_data = milliseconds_all - milliseconds_comp;
+
+    std::cout << "GPU COMPUTE TIME (ms.):\t" << (int) milliseconds_comp << std::endl;
+    std::cout << "GPU TOTAL TIME (ms.):\t" << (int) milliseconds_all << std::endl;
+    std::cout << "GPU DATA TIME (ms.):\t" << (int) milliseconds_data << std::endl;
 
     checkCudaErrors(cudaFree(d_ptr));
     checkCudaErrors(cudaFree(d_res));
