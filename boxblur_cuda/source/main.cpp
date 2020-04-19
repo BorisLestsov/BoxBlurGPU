@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include "common.h"
 #include "box_filter_cuda.h"
 
 
@@ -8,18 +7,18 @@ int main(int argc, char** argv)
 {
 	PPMImage* img, *res;
 	img = readPPM(argv[1]);
-	int ker = std::atoi(argv[2]);
-    std::string mode = std::string(argv[3]);
+	int ker = std::atoi(argv[3]);
+    std::string mode = std::string(argv[4]);
 
 	res = new PPMImage;
 	res->x = img->x - (ker - 1);
 	res->y = img->y - (ker - 1);
     res->data = (PPMPixel*)malloc(res->x * res->y * sizeof(PPMPixel));
 
-    if (mode == "sep"){
-        box_blur_cuda_sep(img, res, ker);
-    } else if (mode == "conv") {
+    if (mode == "conv"){
         box_blur_cuda(img, res, ker);
+    } else if (mode == "sep") {
+        box_blur_cuda_sep(img, res, ker);
     } else if (mode == "check") {
         PPMImage* res2 = new PPMImage;
         res2->x = img->x - (ker - 1);
@@ -36,13 +35,9 @@ int main(int argc, char** argv)
         for (int i = 0; i < res->x; i++){
             for (int j = 0; j < res->y; j++){
                 int ind = i*res->y + j;
-                double s1 = s;
                 s += std::abs(res_ptr[ind+0] - res2_ptr[ind+0]);
                 s += std::abs(res_ptr[ind+1] - res2_ptr[ind+1]);
                 s += std::abs(res_ptr[ind+2] - res2_ptr[ind+2]);
-                // if (s - s1 > 1e-4){
-                //     std::cout << i << " " << j << "  " << (int) res_ptr[ind+0] << "  " << (int) res2_ptr[ind+0] << std::endl;
-                // }
             }
         }
         s /= res->x * res->y * 3;
@@ -54,7 +49,7 @@ int main(int argc, char** argv)
         throw std::string("Unknown mode!");
     }
 
-	writePPM("res.ppm", res);
+	writePPM(argv[2], res);
     free(img->data);
     free(res->data);
 	free(res);

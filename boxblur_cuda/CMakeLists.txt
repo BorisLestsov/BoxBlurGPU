@@ -39,26 +39,28 @@ set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 set(SOURCE_DIR source)
 set(INCLUDE_DIR include ${CMAKE_SOURCE_DIR}/common/include)
 
-file(GLOB SOURCES
+file(GLOB SOURCES_LIB
         "${SOURCE_DIR}/*.cu"
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.c")
+list(REMOVE_ITEM SOURCES_LIB
+    ${SOURCE_DIR}/main.cpp)
 
 file(GLOB INCLUDE
-        "${CMAKE_SOURCE_DIR}/common/include/*.h"
-        "${CMAKE_SOURCE_DIR}/common/include/*.hpp"
         "${INCLUDE_DIR}/*.cuh"
         "${INCLUDE_DIR}/*.h"
         "${INCLUDE_DIR}/*.hpp")
 
 include_directories(${INCLUDE_DIR})
 
-cuda_add_executable(boxblur_cuda ${SOURCES})
-cuda_add_cublas_to_target(boxblur_cuda)
+cuda_add_library(boxblur_cuda_lib ${SOURCES_LIB})
+#cuda_add_cublas_to_target(boxblur_cuda_lib)
+cuda_add_executable(boxblur_cuda ${SOURCE_DIR}/main.cpp)
+target_link_libraries(boxblur_cuda boxblur_cuda_lib)
 
 set_target_properties(boxblur_cuda PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}
-        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
         )
 
 #target_link_libraries(boxblur_cuda cudnn)
